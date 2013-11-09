@@ -1,3 +1,45 @@
 \documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{bm}
+
+\title{Modeling a Bank Customer Queue}
+\date{\today}
+\author{Sam DeHority \and Michael Gao \and Bradley King}
+
 \begin{document}
+
+\maketitle
+
+\section{Assumptions}
+\subsection{Exponential-family service time distribution}
+
+We note that the arrival time and service time distributions we were given are both generated from a small sample size, as shown by the frequencies being multiples of 0.05, and not very precise, as they are given in discrete minutes.  We chose to use the \textbf{exponential family of distributions} \cite{exponential_family} to initially parametrize the continuous-time real distributions of both the arrival and service times.
+
+Suppose that $X$ denotes a random variable.  We first define a \textbf{sufficient statistic} to be a vector-valued function $\bm{T}(X)$ such that no other function $T_1(X)$ that is not a member of $\bm{T}$ provides any additional information about $X$.  In short, $\bm{T}$ is sufficient in estimating $f_X (x)$.
+
+The exponential family has the convenient property, by the \textbf{Pitman-Koopman-Darmois theorem}, that it is the only family of distributions that has a sufficient statistic $\bm{T}$ whose dimension does not increase as the sample size $n$ increases.  In other words, if there is a finite set of things that represents all we know about $X$, then the only reasonable estimate for the distribution of $X$ is an exponential-family distribution.
+
+Members of the exponential family take on the form
+$$f_X (x | \theta) = h(x)g(\bm{\eta})\exp\left( \bm{\eta}\cdot\mathbf{T}(x) \right),$$
+where $\bm{\eta}$ is a normalization factor to ensure the distribution integrates to 1.
+
+\subsection{Arrival time}
+\subsubsection{Traffic waves}
+\subsection{Service time}
+
+\subsection{Improvements in service}
+\section{Model}
+\subsection{Mean waiting time}
+\subsection{Mean length of queue}
+\section{Simulation approach}
+\section{Results}
+\subsection{Distributions}
+\subsection{Current quality of service}
+\subsection{Simulation}
+\subsection{Recommendations}
+\section{Conclusion}
+
+\bibliographystyle{te}
+\bibliography{biblio}
 \end{document}
