@@ -197,23 +197,57 @@ repeat {
   print(-s)
 }
 
-ww <- c()
-repeat {
-  w <- c(sample.s1())
-  i <- 1
-  time <- 0
-  repeat {
-    si <- sample.s1()
-    time <- time + si
-    ti <- sample.t1()
-    if (time > 385.95) break
-    print(i)
-    w <- c(w, max(w[length(w)] + si - ti, 0))
-    i <- i + 1
+mean.waiting.time <- function(contraction) {
+  ww <- c()
+  for (i in 1:1000) {
+    w <- c(sample.s1())
+    i <- 1
+    time <- 0
+    repeat {
+      si <- contraction * sample.s1()
+      ti <- sample.t1()
+      time <- time + ti
+      if (time > 385.95) break
+      #print(i)
+      w <- c(w, max(w[length(w)] + si - ti, 0))
+      i <- i + 1
+    }
+    #hist(w)
+    #print(mean(w))
+    ww <- c(ww, mean(w))
   }
-  #hist(w)
-  print(mean(w))
-  ww <- c(ww, mean(w))
+  return(mean(ww))
+}
+mean.queue.length <- function(contraction) {
+  ww <- c()
+  for (i in 1:1000) {
+    w <- c(sample.s1())
+    i <- 1
+    time <- 0
+    repeat {
+      si <- contraction * sample.s1()
+      ti <- sample.t1()
+      time <- time + ti
+      if (time > 385.95) break
+      #print(i)
+      w <- c(w, max(w[length(w)] + si - ti, 0))
+      i <- i + 1
+    }
+    #hist(w)
+    #print(mean(w))
+    ww <- c(ww, sum(w)/385.95)
+  }
+  return(mean(ww))
+}
+low <- 0.4
+high <- 1.0
+repeat {
+  print(paste(low, high, sep=' '))
+  mid <- (low + high) / 2
+  result <- mean.queue.length(mid)
+  print(result)
+  if (2.0 < result) high <- mid
+  else low <- mid
 }
 
 #lambdas <- seq(from=0.5,to=3.5,length.out=possibilities)
