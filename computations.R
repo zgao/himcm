@@ -199,15 +199,18 @@ repeat {
 
 ww <- c()
 repeat {
-  w <- c(sample.discrete.s1())
-  sample.discrete.diff <- function() {
-    return(sample.discrete.s1() - sample.discrete.t1())
-  }
-  for (i in 1:150) {
+  w <- c(sample.s1())
+  i <- 1
+  time <- 0
+  repeat {
+    si <- sample.s1()
+    time <- time + si
+    ti <- sample.t1()
+    if (time > 385.95) break
     print(i)
-    w <- c(w, max(w[length(w)] + sample.discrete.diff(), 0))
+    w <- c(w, max(w[length(w)] + si - ti, 0))
+    i <- i + 1
   }
-  print(w)
   #hist(w)
   print(mean(w))
   ww <- c(ww, mean(w))
