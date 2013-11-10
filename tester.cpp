@@ -8,8 +8,8 @@ using namespace std;
 FILE *fout;
 
 double pi = 3.1415;
-int iterations = 500000;
-int possibilities = 25;
+int iterations = 40000;
+int possibilities = 13;
 double real_probs[] = {0.0999, 0.1499, 0.0999, 0.3499, 0.2499, 0.0499, 0.0006};
 vector<double> lambdas;
 vector<double> periods;
@@ -21,7 +21,7 @@ inline double r2() {
 
 inline double get_f(double period, double power, double x) {
     double adjusted = x / period;
-    return exp(power * (adjusted - floor(adjusted) - 1));
+    return exp((adjusted - floor(adjusted) - 1) * power);
 }
 
 inline double next_end(double period, double x) {
@@ -29,6 +29,10 @@ inline double next_end(double period, double x) {
 }
 
 double eval_divergence(double lambda, double period, double power) {
+
+    double sum = 0.0;
+    double sq = 0.0;
+
     double total_kl = 0.0;
     vector<double> *sofar = new vector<double>();
     sofar->push_back(0.0);
@@ -45,20 +49,32 @@ double eval_divergence(double lambda, double period, double power) {
     for (vector<double>::iterator i = sofar->begin() + 1;
             i != sofar->end(); i++) {
         if (get_f(period, power, *i) > r2() ||
-                (i != sofar->end() - 1 && *(i + 1) >= next_end(period, *i) - period))
-            filtered_sofar->push_back(*i);
+                (i != sofar->end() - 1 && *(i + 1) >= next_end(period, *i) - period)) {
+            double d = *i;
+            filtered_sofar->push_back(d);
+        }
     }
     double diff_buckets[7];
     for (int i = 0; i < 7; i++) diff_buckets[i] = 0.0;
     for (vector<double>::iterator i = filtered_sofar->begin(); i != filtered_sofar->end() - 1; i++) {
         double t = *i, t2 = *(i + 1);
+        double d = t2 - t;
+        sum += d;
+        sq += d * d;
         int diff_bucket = (int) floor(t2 - t + 0.5);
         diff_bucket = min(diff_bucket, 6);
         diff_buckets[diff_bucket] += 1.0;
     }
     for (int i = 0; i < 7; i++) {
         diff_buckets[i] /= (double) (filtered_sofar->size() - 1);
+        printf("%.6lf ", diff_buckets[i]);
     }
+    printf("\n");
+
+    sum /= (filtered_sofar->size() - 1);
+    sq /= (filtered_sofar->size() - 1);
+    printf("MEAN %.6lf\n", sum);
+    printf("VARIANCE %.6lf\n", sq - sum * sum);
 
     for (int i = 0; i < 7; i++) {
         total_kl += log(real_probs[i] / diff_buckets[i]) * real_probs[i];
@@ -70,10 +86,14 @@ double eval_divergence(double lambda, double period, double power) {
 int main() {
     srand(33333);
     fout = fopen("results.out", "w");
+
+    eval_divergence(1.304, 3.422, 5.980);
+
+    /*
     for (int i = 0; i <= possibilities; i++) {
-        lambdas.push_back((1.20 * i + 1.40 * (possibilities - i)) / possibilities);
-        periods.push_back((3.35 * i + 3.65 * (possibilities - i)) / possibilities);
-        powers.push_back((5.5 * i + 7.0 * (possibilities - i)) / possibilities);
+        lambdas.push_back((0.5* i + 3.5 * (possibilities - i)) / possibilities);
+        periods.push_back((3.0 * i + 5.0 * (possibilities - i)) / possibilities);
+        powers.push_back((10.0 * i + 25.0 * (possibilities - i)) / possibilities);
     }
 
     double best_lambda = -1, best_period = -1, best_power = -1, best_kl = 1e9;
@@ -92,6 +112,6 @@ int main() {
                 }
             }
 
-    fprintf(fout, "%.6lf %.6lf %.6lf %.6lf\n", best_kl, best_lambda, best_period, best_power);
+    fprintf(fout, "%.6lf %.6lf %.6lf %.6lf\n", best_kl, best_lambda, best_period, best_power);*/
     return 0;
 }
